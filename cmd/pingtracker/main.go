@@ -7,7 +7,7 @@ import (
 	"syscall"
 
 	"github.com/kvn-alcantara/ping-tracker/internal/delivery/cli"
-	"github.com/kvn-alcantara/ping-tracker/internal/repository"
+	"github.com/kvn-alcantara/ping-tracker/internal/factory"
 	"github.com/kvn-alcantara/ping-tracker/internal/usecase"
 )
 
@@ -22,7 +22,7 @@ func main() {
 	defer logger.Close()
 
 	display := cli.NewTerminalDisplay()
-	pinger := repository.NewProBingPinger()
+    pinger := factory.NewPinger()
 	monitor := usecase.NewMonitor(pinger, display, logger, urls)
 
 	sigChan := make(chan os.Signal, 1)
