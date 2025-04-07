@@ -1,53 +1,49 @@
 package repository
 
 import (
-	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
-type MockPinger struct {
-	RTT   time.Duration
-	Error error
-}
+func TestHttpPingerPingSuccess(t *testing.T) {
+	server := SetupLocalServer(t)
 
-func (m *MockPinger) Ping(ip string) (time.Duration, error) {
-	return m.RTT, m.Error
-}
+	pinger := NewHttpPinger()
 
-func TestProBingPingerPingSuccess(t *testing.T) {
-	mockPinger := &MockPinger{
-		RTT:   50 * time.Millisecond,
-		Error: nil,
-	}
-
-	rtt, err := mockPinger.Ping("8.8.8.8")
+	rtt, err := pinger.Ping(server.Listener.Addr().String())
 
 	assert.NoError(t, err, "expected no error when pinging a reachable IP")
 	assert.Greater(t, rtt, time.Duration(0), "expected RTT to be greater than 0")
 }
 
-func TestProBingPingerPingUnreachable(t *testing.T) {
-	mockPinger := &MockPinger{
-		RTT:   0,
-		Error: fmt.Errorf("no ping reply received"),
-	}
+func TestHttpPingerPingUnreachable(t *testing.T) {
+	pinger := NewHttpPinger()
 
-	rtt, err := mockPinger.Ping("192.0.2.0")
+	rtt, err := pinger.Ping("203.0.113.0")
 
 	assert.Error(t, err, "expected an error when pinging an unreachable IP")
 	assert.Equal(t, time.Duration(0), rtt, "expected RTT to be 0 for an unreachable IP")
 }
 
-func TestProBingPingerPingInvalidIP(t *testing.T) {
-	pinger := NewProBingPinger()
+func TestHttpPingerPingInvalidIP(t *testing.T) {
+	pinger := NewHttpPinger()
 
-	// Use an invalid IP address
-	ip := "invalid-ip"
-	rtt, err := pinger.Ping(ip)
+	rtt, err := pinger.Ping("invalid-ip")
 
 	assert.Error(t, err, "expected an error when pinging an invalid IP")
 	assert.Equal(t, time.Duration(0), rtt, "expected RTT to be 0 for an invalid IP")
+}
+
+func SetupLocalServer(t *testing.T) *httptest.Server {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+	}))
+
+	t.Cleanup(server.Close)
+
+	return server
 }
