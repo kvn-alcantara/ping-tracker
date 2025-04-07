@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/mgutz/ansi"
@@ -31,11 +32,26 @@ func NewTerminalDisplay() *TerminalDisplay {
 	}
 }
 
+var (
+	stdout      io.Writer = os.Stdout
+	stdoutMutex sync.RWMutex
+)
+
+func SetOutput(w io.Writer) {
+	stdoutMutex.Lock()
+	defer stdoutMutex.Unlock()
+	stdout = w
+}
+
 func (d *TerminalDisplay) ClearScreen() {
+	stdoutMutex.RLock()
+	defer stdoutMutex.RUnlock()
 	fmt.Fprint(stdout, "\033[H\033[2J")
 }
 
 func (d *TerminalDisplay) PrintHeader(title string) {
+	stdoutMutex.RLock()
+	defer stdoutMutex.RUnlock()
 	fmt.Fprintln(stdout, d.cyan(title))
 	fmt.Fprintln(stdout, "-------------------------------------------------------")
 }
@@ -59,13 +75,9 @@ func (d *TerminalDisplay) PrintStatus(url string, status string, latency time.Du
 		latencyStr = fmt.Sprintf(" (Latency: %s)", latency.Round(time.Millisecond))
 	}
 
+	stdoutMutex.RLock()
+	defer stdoutMutex.RUnlock()
 	fmt.Fprintf(stdout, "%-30s [%s]%s\n", url, statusColor(status), latencyStr)
 }
 
 var _ Display = (*TerminalDisplay)(nil)
-
-var stdout io.Writer = os.Stdout
-
-func SetOutput(w io.Writer) {
-	stdout = w
-}
