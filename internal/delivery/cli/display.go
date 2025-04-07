@@ -1,9 +1,9 @@
 package cli
 
 import (
-	"bytes"
 	"fmt"
 	"io"
+	"os"
 	"time"
 
 	"github.com/mgutz/ansi"
@@ -64,5 +64,8 @@ func (d *TerminalDisplay) PrintStatus(url string, status string, latency time.Du
 
 var _ Display = (*TerminalDisplay)(nil)
 
-// stdout is a package-level variable that can be overridden for testing
-var stdout io.Writer = &bytes.Buffer{}
+var stdout io.Writer = os.Stdout
+
+func SetOutput(w io.Writer) {
+	stdout = w
+}
