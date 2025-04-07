@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
+	"github.com/kvn-alcantara/ping-tracker/internal/delivery/cli"
 )
 
 func main() {
-	urls := []string{"google.com", "github.com", "reddit.com"}
+	display := cli.NewTerminalDisplay()
 
-	fmt.Println(urls)
+	display.PrintHeader("Ping Tracker")
 }
