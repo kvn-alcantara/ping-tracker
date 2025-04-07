@@ -46,7 +46,7 @@ func TestFileLoggerClose(t *testing.T) {
 }
 
 func withTempFile(t *testing.T, testFunc func(tempFile string)) {
-	tempFile := "test_logger.log"
-	defer os.Remove(tempFile)
+	tempDir := t.TempDir()
+	tempFile := tempDir + "/test_logger.log"
 	testFunc(tempFile)
 }
