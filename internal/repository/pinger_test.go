@@ -38,6 +38,24 @@ func TestHttpPingerPingInvalidIP(t *testing.T) {
 	assert.Equal(t, time.Duration(0), rtt, "expected RTT to be 0 for an invalid IP")
 }
 
+func TestHttpPingerShouldOnlyConsider200(t *testing.T) {
+	server := SetupLocalServer(t)
+
+	pinger := NewHttpPinger()
+
+	rtt, err := pinger.Ping(server.Listener.Addr().String())
+	assert.NoError(t, err, "expected no error when pinging a reachable IP")
+	assert.Greater(t, rtt, time.Duration(0), "expected RTT to be greater than 0")
+
+	server.Config.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(304)
+	})
+
+	rtt, err = pinger.Ping(server.Listener.Addr().String())
+	assert.Error(t, err, "expected an error when pinging a non-200 response")
+	assert.Equal(t, time.Duration(0), rtt, "expected RTT to be 0 for a non-200 response")
+}
+
 func SetupLocalServer(t *testing.T) *httptest.Server {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
