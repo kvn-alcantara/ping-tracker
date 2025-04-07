@@ -25,8 +25,6 @@ func main() {
 	pinger := repository.NewProBingPinger()
 	monitor := usecase.NewMonitor(pinger, display, logger, urls)
 
-	monitor.StartMonitoring()
-
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 	done := make(chan bool)
@@ -37,5 +35,6 @@ func main() {
 		close(done)
 	}()
 
+	monitor.StartMonitoring()
 	monitor.Run(done)
 }
