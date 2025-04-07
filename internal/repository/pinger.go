@@ -22,7 +22,7 @@ func (p *ProBingPinger) Ping(ip string) (time.Duration, error) {
 	if err != nil {
 		return 0, err
 	}
-	pinger.SetPrivileged(false)
+	pinger.SetPrivileged(true)
 	pinger.Count = 3
 	pinger.Timeout = 1 * time.Second
 

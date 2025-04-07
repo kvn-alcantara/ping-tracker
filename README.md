@@ -1,18 +1,14 @@
 # Ping Tracker
 
+![alt text](image.png)
+
 A concurrent network scanning tool that pings IP addresses or hostnames and displays their status in real-time.
-
-## Features
-
-- Concurrent scanning of multiple IP addresses or hostnames
-- Real-time status updates in the terminal
-- Support for both ping and TCP connection checks
-- Configurable timeout and retry settings
 
 ## Prerequisites
 
 - Go 1.16 or higher
 - Git
+- Linux Users: Sadly this application requires privileged access to send ICMP ping requests using raw sockets. You can run the application with elevated privileges or grant the necessary capabilities to the binary.
 
 ## Installation
 
@@ -30,6 +26,11 @@ go mod download
 3. Build the application:
 ```bash
 go build ./cmd/pingtracker
+```
+
+4. Run as Root (Linux only):
+```bash
+sudo ./ping-tracker
 ```
 
 ## Usage
@@ -50,21 +51,6 @@ To scan a list of hostnames:
 
 - `-range`: Specify an IP range (e.g., 192.168.1.1-192.168.1.255)
 - `-hosts`: Specify a comma-separated list of hostnames
-- `-timeout`: Set connection timeout in seconds (default: 5)
-- `-retries`: Number of retry attempts (default: 3)
-- `-port`: TCP port to check (default: 80)
-
-### Examples
-
-Scan a specific IP range with custom timeout:
-```bash
-./pingtracker -range 10.0.0.1-10.0.0.255 -timeout 10
-```
-
-Scan multiple hosts with custom port:
-```bash
-./pingtracker -hosts example.com,google.com -port 443
-```
 
 ## Testing
 
