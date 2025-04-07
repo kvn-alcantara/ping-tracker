@@ -18,7 +18,7 @@ A concurrent network scanning tool that pings IP addresses or hostnames and disp
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/ping-tracker.git
+git clone https://github.com/kvn-alcantara/ping-tracker.git
 cd ping-tracker
 ```
 
@@ -29,7 +29,7 @@ go mod download
 
 3. Build the application:
 ```bash
-go build -o pingtracker
+go build ./cmd/pingtracker
 ```
 
 ## Usage

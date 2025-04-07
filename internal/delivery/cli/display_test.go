@@ -2,6 +2,7 @@ package cli
 
 import (
 	"bytes"
+	"os"
 	"testing"
 	"time"
 )
@@ -11,10 +12,8 @@ func TestTerminalDisplay(t *testing.T) {
 
 	t.Run("PrintHeader", func(t *testing.T) {
 		var buf bytes.Buffer
-		// Temporarily redirect stdout to our buffer
-		old := stdout
-		stdout = &buf
-		defer func() { stdout = old }()
+		SetOutput(&buf)
+		defer SetOutput(os.Stdout)
 
 		display.PrintHeader("Test Title")
 		output := buf.String()
@@ -25,9 +24,8 @@ func TestTerminalDisplay(t *testing.T) {
 
 	t.Run("PrintStatus", func(t *testing.T) {
 		var buf bytes.Buffer
-		old := stdout
-		stdout = &buf
-		defer func() { stdout = old }()
+		SetOutput(&buf)
+		defer SetOutput(os.Stdout)
 
 		tests := []struct {
 			url     string
@@ -51,9 +49,8 @@ func TestTerminalDisplay(t *testing.T) {
 
 	t.Run("ClearScreen", func(t *testing.T) {
 		var buf bytes.Buffer
-		old := stdout
-		stdout = &buf
-		defer func() { stdout = old }()
+		SetOutput(&buf)
+		defer SetOutput(os.Stdout)
 
 		display.ClearScreen()
 		output := buf.String()
