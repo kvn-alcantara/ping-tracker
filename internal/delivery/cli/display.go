@@ -1,7 +1,9 @@
 package cli
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"time"
 
 	"github.com/mgutz/ansi"
@@ -30,12 +32,12 @@ func NewTerminalDisplay() *TerminalDisplay {
 }
 
 func (d *TerminalDisplay) ClearScreen() {
-	fmt.Print("\033[H\033[2J")
+	fmt.Fprint(stdout, "\033[H\033[2J")
 }
 
 func (d *TerminalDisplay) PrintHeader(title string) {
-	fmt.Println(d.cyan(title))
-	fmt.Println("-------------------------------------------------------")
+	fmt.Fprintln(stdout, d.cyan(title))
+	fmt.Fprintln(stdout, "-------------------------------------------------------")
 }
 
 func (d *TerminalDisplay) PrintStatus(url string, status string, latency time.Duration) {
@@ -57,7 +59,10 @@ func (d *TerminalDisplay) PrintStatus(url string, status string, latency time.Du
 		latencyStr = fmt.Sprintf(" (Latency: %s)", latency.Round(time.Millisecond))
 	}
 
-	fmt.Printf("%-30s [%s]%s\n", url, statusColor(status), latencyStr)
+	fmt.Fprintf(stdout, "%-30s [%s]%s\n", url, statusColor(status), latencyStr)
 }
 
 var _ Display = (*TerminalDisplay)(nil)
+
+// stdout is a package-level variable that can be overridden for testing
+var stdout io.Writer = &bytes.Buffer{}
