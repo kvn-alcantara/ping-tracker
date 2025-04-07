@@ -1,5 +1,7 @@
 # Ping Tracker
 
+![alt text](image.png)
+
 A concurrent network scanning tool that pings IP addresses or hostnames and displays their status in real-time.
 
 ## Prerequisites
