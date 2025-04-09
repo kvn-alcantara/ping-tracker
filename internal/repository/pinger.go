@@ -9,16 +9,20 @@ import (
 	probing "github.com/prometheus-community/pro-bing"
 )
 
+// Pinger is an interface that defines the Ping method for checking the reachability of an IP address.
 type Pinger interface {
 	Ping(ip string) (time.Duration, error)
 }
 
+// ProBingPinger is an implementation of the Pinger interface using the pro-bing library.
 type ProBingPinger struct{}
 
+// NewProBingPinger creates a new instance of ProBingPinger.
 func NewProBingPinger() *ProBingPinger {
 	return &ProBingPinger{}
 }
 
+// Ping sends ICMP echo requests to the specified IP address and returns the average round-trip time or an error.
 func (p *ProBingPinger) Ping(ip string) (time.Duration, error) {
 	pinger, err := probing.NewPinger(ip)
 	if err != nil {
@@ -40,11 +44,13 @@ func (p *ProBingPinger) Ping(ip string) (time.Duration, error) {
 	return 0, fmt.Errorf("no ping reply received from %s", ip)
 }
 
-type HttpPinger struct {
+// HTTPPinger is an implementation of the Pinger interface using HTTP requests.
+type HTTPPinger struct {
 	client *http.Client
 }
 
-func NewHttpPinger() *HttpPinger {
+// NewHTTPPinger creates a new instance of HTTPPinger with a configured HTTP client.
+func NewHTTPPinger() *HTTPPinger {
 	client := &http.Client{
 		Timeout: 5 * time.Second,
 		Transport: &http.Transport{
@@ -54,10 +60,12 @@ func NewHttpPinger() *HttpPinger {
 			},
 		},
 	}
-	return &HttpPinger{client: client}
+	return &HTTPPinger{client: client}
 }
 
-func (h *HttpPinger) Ping(ip string) (time.Duration, error) {
+// Ping sends an HTTP GET request to the specified IP address and returns the round-trip time or an error.
+// It tries HTTPS first, and if it fails, it falls back to HTTP.
+func (h *HTTPPinger) Ping(ip string) (time.Duration, error) {
 	start := time.Now()
 
 	resp, err := h.client.Get("https://" + ip)
@@ -77,6 +85,6 @@ func (h *HttpPinger) Ping(ip string) (time.Duration, error) {
 	return duration, nil
 }
 
-var _ Pinger = (*HttpPinger)(nil)
+var _ Pinger = (*HTTPPinger)(nil)
 
 var _ Pinger = (*ProBingPinger)(nil)

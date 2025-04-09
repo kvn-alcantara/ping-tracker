@@ -9,10 +9,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHttpPingerPingSuccess(t *testing.T) {
+func TestHTTPPingerPingSuccess(t *testing.T) {
 	server := SetupLocalServer(t)
 
-	pinger := NewHttpPinger()
+	pinger := NewHTTPPinger()
 
 	rtt, err := pinger.Ping(server.Listener.Addr().String())
 
@@ -20,8 +20,8 @@ func TestHttpPingerPingSuccess(t *testing.T) {
 	assert.Greater(t, rtt, time.Duration(0), "expected RTT to be greater than 0")
 }
 
-func TestHttpPingerPingUnreachable(t *testing.T) {
-	pinger := NewHttpPinger()
+func TestHTTPPingerPingUnreachable(t *testing.T) {
+	pinger := NewHTTPPinger()
 
 	rtt, err := pinger.Ping("203.0.113.0")
 
@@ -29,8 +29,8 @@ func TestHttpPingerPingUnreachable(t *testing.T) {
 	assert.Equal(t, time.Duration(0), rtt, "expected RTT to be 0 for an unreachable IP")
 }
 
-func TestHttpPingerPingInvalidIP(t *testing.T) {
-	pinger := NewHttpPinger()
+func TestHTTPPingerPingInvalidIP(t *testing.T) {
+	pinger := NewHTTPPinger()
 
 	rtt, err := pinger.Ping("invalid-ip")
 
@@ -38,10 +38,10 @@ func TestHttpPingerPingInvalidIP(t *testing.T) {
 	assert.Equal(t, time.Duration(0), rtt, "expected RTT to be 0 for an invalid IP")
 }
 
-func TestHttpPingerShouldOnlyConsider200(t *testing.T) {
+func TestHTTPPingerShouldOnlyConsider200(t *testing.T) {
 	server := SetupLocalServer(t)
 
-	pinger := NewHttpPinger()
+	pinger := NewHTTPPinger()
 
 	rtt, err := pinger.Ping(server.Listener.Addr().String())
 	assert.NoError(t, err, "expected no error when pinging a reachable IP")
