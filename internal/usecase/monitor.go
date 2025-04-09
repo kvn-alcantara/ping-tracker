@@ -12,6 +12,7 @@ import (
 	"github.com/kvn-alcantara/ping-tracker/internal/repository"
 )
 
+// Monitor is responsible for monitoring the status of URLs and updating their statuses in real-time.
 type Monitor struct {
 	pinger     repository.Pinger
 	display    cli.Display
@@ -22,6 +23,7 @@ type Monitor struct {
 	wg         sync.WaitGroup
 }
 
+// NewMonitor creates a new instance of Monitor with the provided dependencies and URLs to monitor.
 func NewMonitor(pinger repository.Pinger, display cli.Display, logger cli.Logger, urls []string) *Monitor {
 	return &Monitor{
 		pinger:     pinger,
@@ -33,6 +35,7 @@ func NewMonitor(pinger repository.Pinger, display cli.Display, logger cli.Logger
 	}
 }
 
+// StartMonitoring begins monitoring all URLs in the Monitor instance by launching a goroutine for each URL.
 func (m *Monitor) StartMonitoring() {
 	for _, url := range m.urls {
 		m.hostStatus[url] = entity.Host{URL: url, Status: "Resolving..."}
@@ -72,6 +75,7 @@ func (m *Monitor) monitorContinuously(url string) {
 	}
 }
 
+// Run starts the real-time monitoring loop, updating host statuses and displaying them until the done channel is closed.
 func (m *Monitor) Run(done <-chan bool) {
 	ticker := time.NewTicker(500 * time.Millisecond)
 	defer ticker.Stop()
@@ -94,5 +98,4 @@ func (m *Monitor) Run(done <-chan bool) {
 			return
 		}
 	}
-	m.wg.Wait()
 }
